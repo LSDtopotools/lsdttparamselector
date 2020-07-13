@@ -12,9 +12,9 @@ with open('HISTORY.rst') as history_file:
 
 requirements = [ ]
 
-setup_requirements = ['pytest-runner', ]
+setup_requirements = ['pytest-runner', 'ipykernel>=4.5.1','ipython>=6.1.0','ipywidgets>=7.5.1']
 
-test_requirements = ['pytest>=3', ]
+test_requirements = ['pytest>=3', 'ipykernel>=4.5.1','ipython>=6.1.0','ipywidgets>=7.5.1' ]
 
 setup(
     author="Simon M Mudd",
