@@ -16,7 +16,7 @@ install: pip install -r $PWD/requirements_dev.txt
 #install: pip install ipykernel ipython ipywidgets
 
 # Command to run tests, e.g. python setup.py test
-script: tox
+script: pytest
 
 # Assuming you have installed the travis-ci CLI tool, after you
 # create the Github repo and add it to Travis, run the

@@ -44,6 +44,7 @@ class lsdttdm():
 			self.drainage_area_calculations = self.make_drainage_area()
 			self.single_channel_calculations = self.make_single_channel()
 			self.basic_channel_network_calculations = self.make_basic_channel_network()
+			self.basin_extraction_calculations = self.make_basin_extraction()
 			
 			self.tab_nest = self.make_widget_lsdtt_basic_metrics()
 			
@@ -160,13 +161,16 @@ class lsdttdm():
 		
 		self.single_channel_widget = self.make_vertical_widgets(widget_dict = self.single_channel_calculations)
 		self.basic_channel_network_widget = self.make_vertical_widgets(widget_dict = self.basic_channel_network_calculations)
+		self.basin_extraction_widget = self.make_vertical_widgets(widget_dict = self.basin_extraction_calculations)
 	
 		widget_dicts.append(self.single_channel_calculations)
 		widget_dicts.append(self.basic_channel_network_calculations)
+		widget_dicts.append(self.basin_extraction_calculations)
 		
-		basic_accordion3 = widgets.Accordion(children=[self.single_channel_widget,self.basic_channel_network_widget])
+		basic_accordion3 = widgets.Accordion(children=[self.single_channel_widget,self.basic_channel_network_widget,self.basin_extraction_widget])
 		basic_accordion3.set_title(0, 'Extracting a single channel')
 		basic_accordion3.set_title(1, 'Basic channel network')		
+		basic_accordion3.set_title(2, 'Basin extraction')	
 		
 		
 		
@@ -749,4 +753,102 @@ class lsdttdm():
 		this_dict.update({"print_junctions_to_csv": print_junctions_to_csv})		
 		
 		return this_dict	
-				
+
+	
+	def make_basin_extraction(self):
+		'''
+		This creates all the widgets for calculating slope, curvature, etc
+		
+		Author: SMM
+		
+		Date: 14/07/2020
+		'''	   
+		
+		wide_style = {'description_width': 'initial'}
+		this_dict = {}
+
+		find_basins = widgets.Checkbox(
+					value=False,
+					description='find_basins',
+					disabled=False,
+					indent=False)
+		this_dict.update({"find_basins": find_basins})			  
+		
+		minimum_basin_size_pixels = widgets.BoundedIntText(
+					value=50000,
+					min=1,
+					max=100000000000,
+					step=10,
+					description='minimum_basin_size_pixels',
+					disabled=False,
+					style=wide_style)
+		this_dict.update({"minimum_basin_size_pixels": minimum_basin_size_pixels})
+
+		maximum_basin_size_pixels = widgets.BoundedIntText(
+					value=1000000,
+					min=1,
+					max=100000000000,
+					step=10,
+					description='maximum_basin_size_pixels',
+					disabled=False,
+					style=wide_style)
+		this_dict.update({"maximum_basin_size_pixels": maximum_basin_size_pixels})	
+
+		only_take_largest_basin = widgets.Checkbox(
+					value=False,
+					description='only_take_largest_basin',
+					disabled=False,
+					indent=False)
+		this_dict.update({"only_take_largest_basin": only_take_largest_basin})	  
+		
+		BaselevelJunctions_file= widgets.Text(
+					value="NULL",
+					description='BaselevelJunctions_file',
+					disabled=False,
+					indent=False,
+					style=wide_style)
+		this_dict.update({"BaselevelJunctions_file": BaselevelJunctions_file})			 
+		
+		get_basins_from_outlets = widgets.Checkbox(
+					value=False,
+					description='get_basins_from_outlets',
+					disabled=False,
+					indent=False)
+		this_dict.update({"get_basins_from_outlets": get_basins_from_outlets})	  	
+
+		search_radius_nodes = widgets.BoundedIntText(
+					value=8,
+					min=1,
+					max=200,
+					step=1,
+					description='search_radius_nodes',
+					disabled=False,
+					style=wide_style)
+		this_dict.update({"search_radius_nodes": search_radius_nodes})			
+
+		basin_outlet_csv= widgets.Text(
+					value="NULL",
+					description='basin_outlet_csv',
+					disabled=False,
+					indent=False,
+					style=wide_style)
+		this_dict.update({"basin_outlet_csv": basin_outlet_csv})	  
+		
+		extend_channel_to_node_before_receiver_junction = widgets.Checkbox(
+					value=True,
+					description='extend_channel_to_node_before_receiver_junction',
+					disabled=False,
+					indent=False)
+		this_dict.update({"extend_channel_to_node_before_receiver_junction": extend_channel_to_node_before_receiver_junction})		
+
+		print_basin_raster = widgets.Checkbox(
+					value=False,
+					description='print_basin_raster',
+					disabled=False,
+					indent=False)
+		this_dict.update({"print_basin_raster": print_basin_raster})			
+		
+		return this_dict	
+					
+	
+	
