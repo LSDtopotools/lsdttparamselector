@@ -38,9 +38,12 @@ class lsdttdm():
 			self.preprocessing = self.make_preprocessing()
 			self.basic_raster_printing = self.make_basic_raster_printing()
 			self.trimming_options = self.make_trimming_options()
+			self.geojson = self.make_geojson()
 			self.slope_calculations = self.make_slope_calculations()
 			self.roughness_calculations = self.make_roughness_calculations()
 			self.drainage_area_calculations = self.make_drainage_area()
+			self.single_channel_calculations = self.make_single_channel()
+			self.basic_channel_network_calculations = self.make_basic_channel_network()
 			
 			self.tab_nest = self.make_widget_lsdtt_basic_metrics()
 			
@@ -127,16 +130,19 @@ class lsdttdm():
 		self.pp_widget = self.make_vertical_widgets(widget_dict = self.preprocessing)
 		self.print_widget = self.make_vertical_widgets(widget_dict = self.basic_raster_printing)
 		self.trimming_widget = self.make_vertical_widgets(widget_dict = self.trimming_options)
+		self.geojson_widget = self.make_vertical_widgets(widget_dict = self.geojson)
 		
 		widget_dicts.append(self.preprocessing)
 		widget_dicts.append(self.basic_raster_printing)
 		widget_dicts.append(self.trimming_options)
+		widget_dicts.append(self.geojson)
 		
 		
-		basic_accordion = widgets.Accordion(children=[self.pp_widget, self.print_widget, self.trimming_widget])
+		basic_accordion = widgets.Accordion(children=[self.pp_widget, self.print_widget, self.trimming_widget,self.geojson_widget])
 		basic_accordion.set_title(0, 'Preprocessing')
 		basic_accordion.set_title(1, 'Basic raster printing')
 		basic_accordion.set_title(2, 'Raster trimming')
+		basic_accordion.set_title(3, 'Convert points to geojson')
 		
 		self.slope_widget = self.make_vertical_widgets(widget_dict = self.slope_calculations)
 		self.roughness_widget = self.make_vertical_widgets(widget_dict = self.roughness_calculations) 
@@ -152,9 +158,15 @@ class lsdttdm():
 		basic_accordion2.set_title(2, 'Drainage area calculations')	   
 
 		
-		basic_accordion3 = widgets.Accordion(children=[self.slope_widget,self.roughness_widget])
-		basic_accordion3.set_title(0, 'Slope calculations')
-		basic_accordion3.set_title(1, 'Roughness calculations')		
+		self.single_channel_widget = self.make_vertical_widgets(widget_dict = self.single_channel_calculations)
+		self.basic_channel_network_widget = self.make_vertical_widgets(widget_dict = self.basic_channel_network_calculations)
+	
+		widget_dicts.append(self.single_channel_calculations)
+		widget_dicts.append(self.basic_channel_network_calculations)
+		
+		basic_accordion3 = widgets.Accordion(children=[self.single_channel_widget,self.basic_channel_network_widget])
+		basic_accordion3.set_title(0, 'Extracting a single channel')
+		basic_accordion3.set_title(1, 'Basic channel network')		
 		
 		
 		
@@ -314,9 +326,30 @@ class lsdttdm():
 					indent=False)
 		this_dict.update({"only_check_parameters": only_check_parameters})  
 		
-		print("The dictionary contains")
 		return this_dict
-   
+
+	
+	def make_geojson(self):
+		'''
+		This is a single widget for converting csv to geojson
+		
+		Author: SMM
+		
+		Date: 14/07/2020
+		'''
+		wide_style = {'description_width': 'initial'}
+		
+		this_dict = {}
+		
+		convert_csv_to_geojson = widgets.Checkbox(
+					value=False,
+					description='convert_csv_to_geojson',
+					disabled=False,
+					indent=False)
+		this_dict.update({"convert_csv_to_geojson": convert_csv_to_geojson})  
+		
+		return this_dict	
+	
 	def make_basic_raster_printing(self):
 		'''
 		This creates all the widgets for basic raster printing
@@ -629,4 +662,91 @@ class lsdttdm():
 		
 		return this_dict	
 		
-	
+	def make_single_channel(self):
+		'''
+		This creates all the widgets for calculating slope, curvature, etc
+		
+		Author: SMM
+		
+		Date: 14/07/2020
+		'''	   
+		
+		wide_style = {'description_width': 'initial'}
+		this_dict = {}
+ 
+		extract_single_channel = widgets.Checkbox(
+					value=False,
+					description='extract_single_channel',
+					disabled=False,
+					indent=False)
+		this_dict.update({"extract_single_channel": extract_single_channel})	  	
+
+		use_dinf_for_single_channel = widgets.Checkbox(
+					value=False,
+					description='use_dinf_for_single_channel',
+					disabled=False,
+					indent=False)
+		this_dict.update({"use_dinf_for_single_channel": use_dinf_for_single_channel})	  
+		
+		channel_source_fname= widgets.Text(
+					value="single_channel_source",
+					description='channel_source_fname',
+					disabled=False,
+					indent=False,
+					style=wide_style)
+		this_dict.update({"channel_source_fname": channel_source_fname})	 
+		
+		return this_dict	
+		
+	def make_basic_channel_network(self):
+		'''
+		This creates all the widgets for calculating slope, curvature, etc
+		
+		Author: SMM
+		
+		Date: 14/07/2020
+		'''	   
+		
+		wide_style = {'description_width': 'initial'}
+		this_dict = {}
+ 
+		threshold_contributing_pixels = widgets.BoundedIntText(
+					value=1000,
+					min=1,
+					max=100000000,
+					step=10,
+					description='threshold_contributing_pixels:',
+					disabled=False,
+					style=wide_style)
+		this_dict.update({"threshold_contributing_pixels": threshold_contributing_pixels})
+
+		print_stream_order_raster = widgets.Checkbox(
+					value=False,
+					description='print_stream_order_raster',
+					disabled=False,
+					indent=False)
+		this_dict.update({"print_stream_order_raster": print_stream_order_raster})	  	
+
+		print_channels_to_csv = widgets.Checkbox(
+					value=False,
+					description='print_channels_to_csv',
+					disabled=False,
+					indent=False)
+		this_dict.update({"print_channels_to_csv": print_channels_to_csv})	  
+		
+		print_junction_index_raster = widgets.Checkbox(
+					value=False,
+					description='print_junction_index_raster',
+					disabled=False,
+					indent=False)
+		this_dict.update({"print_junction_index_raster": print_junction_index_raster})	  	
+
+		print_junctions_to_csv = widgets.Checkbox(
+					value=False,
+					description='print_junctions_to_csv',
+					disabled=False,
+					indent=False)
+		this_dict.update({"print_junctions_to_csv": print_junctions_to_csv})		
+		
+		return this_dict	
+				
