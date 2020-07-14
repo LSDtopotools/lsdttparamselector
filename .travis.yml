@@ -7,8 +7,11 @@ python:
   - 3.6
   - 3.5
 
+
+script: ls
+
 # Command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
-install: pip install -r requirements_devs.txt
+install: pip install -r $PWD/requirements_dev.txt
 #install: pip install -U tox-travis 
 #install: pip install ipykernel ipython ipywidgets
 
