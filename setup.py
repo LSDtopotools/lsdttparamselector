@@ -10,11 +10,11 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = [ ]
+requirements = ['ipykernel','ipython','ipywidgets']
 
-setup_requirements = ['pytest-runner', 'ipykernel>=4.5.1','ipython>=6.1.0','ipywidgets>=7.5.1']
+setup_requirements = ['pytest-runner', 'ipykernel','ipython','ipywidgets']
 
-test_requirements = ['pytest>=3', 'ipykernel>=4.5.1','ipython>=6.1.0','ipywidgets>=7.5.1' ]
+test_requirements = ['pytest>=3', 'ipykernel','ipython','ipywidgets' ]
 
 setup(
     author="Simon M Mudd",

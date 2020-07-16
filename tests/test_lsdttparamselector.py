@@ -5,20 +5,17 @@
 import pytest
 
 
-from lsdttparamselector import lsdttparamselector
+from lsdttparamselector import lsdttparamselector as lsdps
 
 
 @pytest.fixture
-def response():
+def test_initiate():
     """Sample pytest fixture.
 
     See more at: http://doc.pytest.org/en/latest/fixture.html
     """
-    # import requests
-    # return requests.get('https://github.com/audreyr/cookiecutter-pypackage')
+    param = lsdps.lsdttdm()
 
 
-def test_content(response):
-    """Sample pytest test function with the pytest fixture as an argument."""
-    # from bs4 import BeautifulSoup
-    # assert 'GitHub' in BeautifulSoup(response.content).title.string
+
+
