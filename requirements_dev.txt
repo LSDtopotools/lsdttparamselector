@@ -13,5 +13,5 @@ pytest==6.1.2
 pytest-runner==5.2
 
 ipykernel==5.3.4
-ipython==7.18.1
+ipython==7.19.0
 ipywidgets==7.5.1
