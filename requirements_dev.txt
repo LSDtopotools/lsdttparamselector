@@ -18,6 +18,6 @@ twine==3.3.0
 pytest==6.2.1
 pytest-runner==5.2
 
-ipykernel==5.4.2
+ipykernel==5.4.3
 ipython==7.19.0
 ipywidgets==7.6.3
