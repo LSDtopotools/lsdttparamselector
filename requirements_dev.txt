@@ -9,7 +9,7 @@ flake8==3.8.4
 
 tox==3.23.0
 
-Sphinx==3.5.1
+Sphinx==3.5.2
 
 coverage==5.5
 
