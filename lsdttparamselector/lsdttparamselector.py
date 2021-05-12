@@ -52,6 +52,23 @@ class lsdttdm():
 
             self.tab_nest = self.make_widget_lsdtt_basic_metrics()
 
+        elif (command_line_tool == "lsdtt-chi-mapping"):
+            print("I am creating a lsdtt-chi-mapping input menu")
+            self.preprocessing = self.make_preprocessing()
+            self.basic_raster_printing = self.make_basic_raster_printing()
+            self.trimming_options = self.make_trimming_options()
+            self.geojson = self.make_geojson()
+            self.drainage_area_calculations = self.make_drainage_area()
+            self.single_channel_calculations = self.make_single_channel()
+            self.basic_channel_network_calculations = self.make_basic_channel_network()
+            self.basin_extraction_calculations = self.make_basin_extraction()
+            self.wiener_calculations = self.make_wiener()
+            self.burner_calculations = self.make_raster_burning()
+            self.chi_calculations = self.make_simple_chi()
+
+            self.tab_nest = self.make_widget_lsdtt_chi_mapping()
+
+
         else:
             print("I didn't understand the command line tool")
 
@@ -60,6 +77,34 @@ class lsdttdm():
         print("When you have finished, run the read_widgets tool.")
         print("This will give you a dictionary that can be passed to an lsdtt_driver object .")
         print("======================================================================================")
+
+    def help(self):
+        """
+        This prints some help information to screen
+
+        Author: SMM
+
+        Date: 12/05/2021
+        """
+
+        print("======================================================================================")
+        print("So you need some help with lsdttparamselector, do you?")
+        print("Step 1: Initiate with a command line tool.")
+        print("  Options are lsdtt-basic-metrics, lsdtt-chi-mapping, lsdtt-channel-extraction")
+        print("You can do this with a call like: ")
+        print("  param = ps.lsdttdm(\"lsdtt-chi-mapping\")")
+        print("Step 2: Create and then run a widget like this")
+        print("  tab_nest = param.make_widget()")
+        print("  tab_nest")     
+        print("Step 3: Once you have entered your paramters, grab them with:")
+        print("  parameter_dict = param.read_widgets()")   
+        print("Step 4: you can then use this parameter dictionary for the lsdtt calls")        
+        print("======================================================================================")   
+        print("WARNING: This is a beta version and has limited functionality compared to ")
+        print(" the actual lsdtt command line tools")
+        print(" If you want the full power of lsdtt you should directly modify the driver files")
+        print(" and run lsdtt from command line")
+        print("======================================================================================")                
 
     def make_widget(self):
         """
@@ -87,11 +132,25 @@ class lsdttdm():
 
         Date: 13/07/2020
         """
-        parameter_dict = {}
-        if (self.command_line_tool == "lsdtt-basic-metrics"):
-            parameter_dict = self.read_widgets_lsdtt_basic_metrics()
 
-        return parameter_dict
+        value_dict = {}
+        for wdict in self.widget_list:
+
+
+            for key,widge in wdict.items():
+                # We need some logic here because the value dict needs to be in strings
+                if isinstance(widge.value,bool):
+                    if widge.value:
+                        this_value = "true"
+                    else:
+                        this_value = "false"
+                else:
+                    this_value = str(widge.value)
+
+                value_dict.update({key: this_value})
+
+
+        return value_dict
 
 
 
@@ -107,7 +166,7 @@ class lsdttdm():
         Date: 10/07/2020
         """
 
-        valid_clt = ["lsdtt-basic-metrics","lsdtt-channel-extraction","lsdtt-chi-analysis"]
+        valid_clt = ["lsdtt-basic-metrics","lsdtt-channel-extraction","lsdtt-chi-mapping"]
 
         if (self.command_line_tool not in valid_clt):
             print("Warning: incorrect command line tool. Defaulting to lsdtt-basic-metrics")
@@ -169,7 +228,6 @@ class lsdttdm():
         basic_accordion2.set_title(3, 'Wiener filter')
 
 
-
         self.single_channel_widget = self.make_vertical_widgets(widget_dict = self.single_channel_calculations)
         self.basic_channel_network_widget = self.make_vertical_widgets(widget_dict = self.basic_channel_network_calculations)
         self.basin_extraction_widget = self.make_vertical_widgets(widget_dict = self.basin_extraction_calculations)
@@ -206,36 +264,67 @@ class lsdttdm():
         self.widget_list = widget_dicts
         return tab_nest
 
-    def read_widgets_lsdtt_basic_metrics(self):
-        '''
-        This reads the values from the widget into a dictionary. It is wrapped by the runction read_widgets
 
-        Returns:  A dictionary with parameter values
+
+    def make_widget_lsdtt_chi_mapping(self):
+        '''
+        This there will be a nesting of tabs and accordions
+
+        Returns:  A widget object. This is a wrapper that gets sent to
 
         Author: SMM
 
-        Date: 13/07/2020
+        Date: 12/05/2021
         '''
 
-        value_dict = {}
-        for wdict in self.widget_list:
+        widget_dicts = []
+
+        self.pp_widget = self.make_vertical_widgets(widget_dict = self.preprocessing)
+        self.print_widget = self.make_vertical_widgets(widget_dict = self.basic_raster_printing)
+        self.trimming_widget = self.make_vertical_widgets(widget_dict = self.trimming_options)
+        self.geojson_widget = self.make_vertical_widgets(widget_dict = self.geojson)
+        self.burner_widget = self.make_vertical_widgets(widget_dict = self.burner_calculations)
+
+        widget_dicts.append(self.preprocessing)
+        widget_dicts.append(self.basic_raster_printing)
+        widget_dicts.append(self.trimming_options)
+        widget_dicts.append(self.geojson)
+        widget_dicts.append(self.burner_calculations)
+
+        basic_accordion = widgets.Accordion(children=[self.pp_widget, self.print_widget, self.trimming_widget,self.geojson_widget,self.burner_widget])
+        basic_accordion.set_title(0, 'Preprocessing')
+        basic_accordion.set_title(1, 'Basic raster printing')
+        basic_accordion.set_title(2, 'Raster trimming')
+        basic_accordion.set_title(3, 'Convert points to geojson')
+        basic_accordion.set_title(4, 'Burning raster data to csv')
+
+        self.basic_channel_network_widget = self.make_vertical_widgets(widget_dict = self.basic_channel_network_calculations)
+        self.basin_extraction_widget = self.make_vertical_widgets(widget_dict = self.basin_extraction_calculations)
+
+        widget_dicts.append(self.basic_channel_network_calculations)
+        widget_dicts.append(self.basin_extraction_calculations)
+
+        basic_accordion3 = widgets.Accordion(children=[self.basic_channel_network_widget,self.basin_extraction_widget])
+        basic_accordion3.set_title(0, 'Basic channel network')
+        basic_accordion3.set_title(1, 'Basin extraction')
+
+        self.chi_widget = self.make_vertical_widgets(widget_dict = self.chi_calculations)
+
+        widget_dicts.append(self.chi_calculations)
+
+        basic_accordion4 = widgets.Accordion(children=[self.chi_widget])
+        basic_accordion4.set_title(0, 'Simple chi. (Use lsdtt-chi-analysis for more complex chi analysis)')
+
+        tab_nest = widgets.Tab()
+        tab_nest.children = [basic_accordion, basic_accordion3, basic_accordion4]
+        tab_nest.set_title(0, 'Prep and basic print')
+        tab_nest.set_title(1, 'Channels and basins')
+        tab_nest.set_title(2, 'Chi ananlysis')
 
 
-            for key,widge in wdict.items():
-                # We need some logic here because the value dict needs to be in strings
-                if isinstance(widge.value,bool):
-                    if widge.value:
-                        this_value = "true"
-                    else:
-                        this_value = "false"
-                else:
-                    this_value = str(widge.value)
+        self.widget_list = widget_dicts
+        return tab_nest
 
-                value_dict.update({key: this_value})
-
-
-
-        return value_dict
 
 
     def make_accordion_widgets(self, widget_dict = {}):
